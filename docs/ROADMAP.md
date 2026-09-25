@@ -9,6 +9,6 @@ Statut des 5 lots. Mis à jour par Claude Code après chaque code review.
 | LOT-02 | Interfaces staff et admin (données fictives) | ⬜ À faire |
 | LOT-03 | Backend d'authentification réel | ✅ Fait (codé par Claude Code) |
 | LOT-04 | Backend commande client | ✅ Fait (codé par Claude Code) |
-| LOT-05 | Backend dashboard staff | ⬜ À faire |
+| LOT-05 | Backend dashboard staff | ✅ Fait (codé par Claude Code) |
 
 Légende : ⬜ à faire · 🔄 en cours · 🔍 en review · ✅ fait

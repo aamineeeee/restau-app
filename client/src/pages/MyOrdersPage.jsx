@@ -20,19 +20,29 @@ export default function MyOrdersPage() {
 
   useEffect(() => {
     let cancelled = false;
-    setStatus("loading");
-    fetchMyOrders(token)
-      .then((data) => {
-        if (!cancelled) {
+    let hasLoadedOnce = false;
+
+    function load() {
+      fetchMyOrders(token)
+        .then((data) => {
+          if (cancelled) return;
           setOrders(data);
           setStatus("ready");
-        }
-      })
-      .catch(() => {
-        if (!cancelled) setStatus("error");
-      });
+          hasLoadedOnce = true;
+        })
+        .catch(() => {
+          if (cancelled || hasLoadedOnce) return;
+          setStatus("error");
+        });
+    }
+
+    setStatus("loading");
+    load();
+    const intervalId = setInterval(load, 9000);
+
     return () => {
       cancelled = true;
+      clearInterval(intervalId);
     };
   }, [token]);
 

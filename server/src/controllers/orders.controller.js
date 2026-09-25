@@ -1,11 +1,14 @@
 import { pool } from "../db/pool.js";
 
+const STATUS_ORDER = ["recue", "en_preparation", "prete"];
+
 function toPublicOrder(order, items) {
   return {
     id: order.id,
     status: order.status,
     total: Number(order.total),
     createdAt: order.created_at,
+    ...(order.customer_name ? { customerName: order.customer_name } : {}),
     items: items.map((item) => ({
       menuItemId: item.menu_item_id,
       name: item.name,
@@ -13,6 +16,22 @@ function toPublicOrder(order, items) {
       quantity: item.quantity,
     })),
   };
+}
+
+async function attachItems(orders) {
+  if (orders.length === 0) return [];
+
+  const { rows: items } = await pool.query(
+    "SELECT * FROM order_items WHERE order_id = ANY($1::int[])",
+    [orders.map((order) => order.id)],
+  );
+  const itemsByOrder = new Map();
+  for (const item of items) {
+    if (!itemsByOrder.has(item.order_id)) itemsByOrder.set(item.order_id, []);
+    itemsByOrder.get(item.order_id).push(item);
+  }
+
+  return orders.map((order) => toPublicOrder(order, itemsByOrder.get(order.id) ?? []));
 }
 
 export async function createOrder(request, response) {
@@ -85,19 +104,42 @@ export async function listMyOrders(request, response) {
     "SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
     [request.user.id],
   );
-  if (orders.length === 0) {
-    return response.json([]);
-  }
+  response.json(await attachItems(orders));
+}
 
-  const { rows: items } = await pool.query(
-    "SELECT * FROM order_items WHERE order_id = ANY($1::int[])",
-    [orders.map((order) => order.id)],
+export async function getAllOrders(_request, response) {
+  const { rows: orders } = await pool.query(
+    `SELECT orders.*, users.name AS customer_name
+     FROM orders
+     JOIN users ON users.id = orders.user_id
+     ORDER BY orders.created_at DESC`,
   );
-  const itemsByOrder = new Map();
-  for (const item of items) {
-    if (!itemsByOrder.has(item.order_id)) itemsByOrder.set(item.order_id, []);
-    itemsByOrder.get(item.order_id).push(item);
+  response.json(await attachItems(orders));
+}
+
+export async function updateOrderStatus(request, response) {
+  const orderId = Number(request.params.id);
+  const { status } = request.body ?? {};
+
+  if (!Number.isInteger(orderId)) {
+    return response.status(404).json({ error: "Commande introuvable." });
   }
 
-  response.json(orders.map((order) => toPublicOrder(order, itemsByOrder.get(order.id) ?? [])));
+  const { rows } = await pool.query("SELECT * FROM orders WHERE id = $1", [orderId]);
+  const order = rows[0];
+  if (!order) {
+    return response.status(404).json({ error: "Commande introuvable." });
+  }
+
+  const nextStatus = STATUS_ORDER[STATUS_ORDER.indexOf(order.status) + 1];
+  if (status !== nextStatus) {
+    return response.status(400).json({ error: "Transition de statut invalide." });
+  }
+
+  const { rows: updatedRows } = await pool.query(
+    "UPDATE orders SET status = $1, updated_at = now() WHERE id = $2 RETURNING *",
+    [status, orderId],
+  );
+  const [publicOrder] = await attachItems([updatedRows[0]]);
+  response.json(publicOrder);
 }
