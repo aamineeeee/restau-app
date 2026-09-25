@@ -1,51 +1,33 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createOrder } from "../api/orders.js";
 import CartItemRow from "../components/CartItemRow.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { formatPrice } from "../utils/format.js";
 
-function readOrders(userId) {
-  try {
-    const orders = JSON.parse(localStorage.getItem(`la-table-orders-${userId}`));
-    return Array.isArray(orders) ? orders : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeOrders(userId, orders) {
-  localStorage.setItem(`la-table-orders-${userId}`, JSON.stringify(orders));
-}
-
 export default function CartPage() {
-  const { user } = useAuth();
+  const { token } = useAuth();
   const { items, total, updateQuantity, removeItem, clearCart } = useCart();
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function placeOrder() {
+  async function placeOrder() {
     if (items.length === 0) return;
-
-    const existingOrders = readOrders(user.id);
-    const lastId = existingOrders.reduce(
-      (highest, order) => Math.max(highest, Number(order.id) || 0),
-      0,
-    );
-    const order = {
-      id: Math.max(Date.now(), lastId + 1),
-      status: "recue",
-      total,
-      createdAt: new Date().toISOString(),
-      items: items.map(({ menuItemId, name, price, quantity }) => ({
-        menuItemId,
-        name,
-        price,
-        quantity,
-      })),
-    };
-
-    writeOrders(user.id, [order, ...existingOrders]);
-    clearCart();
-    navigate("/mes-commandes");
+    setError("");
+    setSubmitting(true);
+    try {
+      await createOrder(
+        token,
+        items.map(({ menuItemId, quantity }) => ({ menuItemId, quantity })),
+      );
+      clearCart();
+      navigate("/mes-commandes");
+    } catch (err) {
+      setError(err.message);
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -75,9 +57,7 @@ export default function CartPage() {
               <CartItemRow
                 key={item.menuItemId}
                 item={item}
-                onChangeQuantity={(quantity) =>
-                  updateQuantity(item.menuItemId, quantity)
-                }
+                onChangeQuantity={(quantity) => updateQuantity(item.menuItemId, quantity)}
                 onRemove={() => removeItem(item.menuItemId)}
               />
             ))}
@@ -96,8 +76,13 @@ export default function CartPage() {
               <span>Total</span>
               <strong>{formatPrice(total)}</strong>
             </div>
-            <button className="button checkout-button" onClick={placeOrder}>
-              Valider la commande <span aria-hidden="true">→</span>
+            {error && (
+              <p className="form-error" role="alert">
+                {error}
+              </p>
+            )}
+            <button className="button checkout-button" onClick={placeOrder} disabled={submitting}>
+              {submitting ? "Validation…" : "Valider la commande"} <span aria-hidden="true">→</span>
             </button>
             <p className="summary-note">Votre commande sera transmise à notre équipe.</p>
           </aside>

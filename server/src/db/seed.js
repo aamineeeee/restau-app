@@ -13,6 +13,57 @@ const testAccounts = [
   { name: "Amine Admin", email: "admin@test.com", password: "admin123", role: "admin" },
 ];
 
+const menuItems = [
+  {
+    name: "Burrata & tomates",
+    description: "Tomates anciennes, basilic frais et huile d’olive.",
+    price: 8.5,
+    category: "Entrées",
+    imageUrl: null,
+    isAvailable: true,
+  },
+  {
+    name: "Velouté du marché",
+    description: "Légumes de saison, crème légère et croûtons dorés.",
+    price: 7,
+    category: "Entrées",
+    imageUrl: null,
+    isAvailable: true,
+  },
+  {
+    name: "Poulet rôti fermier",
+    description: "Jus court, pommes grenailles et herbes du jardin.",
+    price: 17.5,
+    category: "Plats",
+    imageUrl: null,
+    isAvailable: true,
+  },
+  {
+    name: "Risotto aux champignons",
+    description: "Riz arborio, champignons bruns et parmesan affiné.",
+    price: 16,
+    category: "Plats",
+    imageUrl: null,
+    isAvailable: true,
+  },
+  {
+    name: "Tarte au citron",
+    description: "Crème acidulée, pâte sablée et meringue légère.",
+    price: 7.5,
+    category: "Desserts",
+    imageUrl: null,
+    isAvailable: true,
+  },
+  {
+    name: "Mousse au chocolat",
+    description: "Chocolat noir, pointe de fleur de sel.",
+    price: 7,
+    category: "Desserts",
+    imageUrl: null,
+    isAvailable: true,
+  },
+];
+
 async function run() {
   const schema = fs.readFileSync(path.join(__dirname, "schema.sql"), "utf-8");
   await pool.query(schema);
@@ -28,7 +79,19 @@ async function run() {
     );
   }
 
+  for (const item of menuItems) {
+    await pool.query(
+      `INSERT INTO menu_items (name, description, price, category, image_url, is_available)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (name) DO UPDATE
+       SET description = EXCLUDED.description, price = EXCLUDED.price, category = EXCLUDED.category,
+           image_url = EXCLUDED.image_url, is_available = EXCLUDED.is_available`,
+      [item.name, item.description, item.price, item.category, item.imageUrl, item.isAvailable],
+    );
+  }
+
   console.log("Comptes de test créés/à jour :", testAccounts.map((account) => account.email).join(", "));
+  console.log("Articles de menu créés/à jour :", menuItems.length);
   await pool.end();
 }
 

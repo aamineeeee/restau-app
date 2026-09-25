@@ -8,7 +8,7 @@ Statut des 5 lots. Mis à jour par Claude Code après chaque code review.
 | LOT-01 | Structure du projet + connexion mock + interfaces client | ✅ Fait (codé par Replit Agent, corrigé par Claude Code) |
 | LOT-02 | Interfaces staff et admin (données fictives) | ⬜ À faire |
 | LOT-03 | Backend d'authentification réel | ✅ Fait (codé par Claude Code) |
-| LOT-04 | Backend commande client | ⬜ À faire |
+| LOT-04 | Backend commande client | ✅ Fait (codé par Claude Code) |
 | LOT-05 | Backend dashboard staff | ⬜ À faire |
 
 Légende : ⬜ à faire · 🔄 en cours · 🔍 en review · ✅ fait

@@ -1,12 +1,48 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { fetchMenu } from "../api/menu.js";
 import MenuItemCard from "../components/MenuItemCard.jsx";
-import { mockMenu } from "../data/mockMenu.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function MenuPage() {
-  const categories = useMemo(
-    () => [...new Set(mockMenu.filter((item) => item.isAvailable).map((item) => item.category))],
-    [],
-  );
+  const { token } = useAuth();
+  const [menu, setMenu] = useState([]);
+  const [status, setStatus] = useState("loading");
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("loading");
+    fetchMenu(token)
+      .then((data) => {
+        if (!cancelled) {
+          setMenu(data);
+          setStatus("ready");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
+  const categories = useMemo(() => [...new Set(menu.map((item) => item.category))], [menu]);
+
+  if (status === "loading") {
+    return (
+      <div className="content-narrow">
+        <p className="page-status">Chargement du menu…</p>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="content-narrow">
+        <p className="page-status page-status-error">Impossible de charger le menu pour le moment.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="content-narrow">
@@ -25,8 +61,8 @@ export default function MenuPage() {
             <span className="section-rule" aria-hidden="true" />
           </div>
           <div className="menu-grid">
-            {mockMenu
-              .filter((item) => item.isAvailable && item.category === category)
+            {menu
+              .filter((item) => item.category === category)
               .map((item) => (
                 <MenuItemCard key={item.id} item={item} />
               ))}
