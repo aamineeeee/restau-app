@@ -2,16 +2,18 @@ import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom
 import AppHeader from "./components/AppHeader.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useAuth } from "./context/AuthContext.jsx";
+import AdminMenuPage from "./pages/AdminMenuPage.jsx";
+import AdminStaffPage from "./pages/AdminStaffPage.jsx";
 import CartPage from "./pages/CartPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import MenuPage from "./pages/MenuPage.jsx";
 import MyOrdersPage from "./pages/MyOrdersPage.jsx";
-import PlaceholderPage from "./pages/PlaceholderPage.jsx";
+import StaffDashboardPage from "./pages/StaffDashboardPage.jsx";
 
 const roleHome = {
   client: "/menu",
   staff: "/staff",
-  admin: "/admin",
+  admin: "/admin/menu",
 };
 
 function HomeRedirect() {
@@ -55,15 +57,24 @@ export default function App() {
           path="/staff"
           element={
             <ProtectedRoute allowedRoles={["staff"]}>
-              <PlaceholderPage roleLabel="Équipe" />
+              <StaffDashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/admin" element={<Navigate to="/admin/menu" replace />} />
+        <Route
+          path="/admin/menu"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminMenuPage />
             </ProtectedRoute>
           }
         />
         <Route
-          path="/admin"
+          path="/admin/staff"
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
-              <PlaceholderPage roleLabel="Administration" />
+              <AdminStaffPage />
             </ProtectedRoute>
           }
         />

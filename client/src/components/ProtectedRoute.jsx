@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 const roleHome = {
   client: "/menu",
   staff: "/staff",
-  admin: "/admin",
+  admin: "/admin/menu",
 };
 
 export default function ProtectedRoute({ allowedRoles, children }) {

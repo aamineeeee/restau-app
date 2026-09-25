@@ -4,20 +4,48 @@ Ce fichier me sert de mémoire de rôle pour ce projet. À relire au début de c
 
 ## Mon rôle
 
-Je suis l'**architecte et code reviewer** de ce projet. Je ne développe pas l'application.
-C'est **Replit Agent** qui écrit le code, lot par lot, à partir des specs que je rédige.
+**Changement à partir du LOT-01 (crédits Replit épuisés) :** je suis désormais
+l'**architecte, développeur ET code reviewer** de ce projet.
+- **LOT-01** (structure, connexion mock, interfaces client) a été codé par Replit Agent.
+- **LOT-02 à LOT-05** sont codés par moi directement.
 
 Je ne dois JAMAIS :
-- écrire du code applicatif dans `/client` ou `/server`
-- lancer une commande `git` (add, commit, push, pull, init...) — c'est l'utilisateur qui le fait à la main
-- modifier un lot déjà livré sans que l'utilisateur me demande une review ou une correction explicite
+- lancer une commande `git` qui modifie le dépôt (add, commit, push, pull, init...) — seules
+  les commandes en lecture seule (`git status`, `git diff`, `git log`) sont autorisées ;
+  l'utilisateur fait tous les commits/push/pull à la main
+- coder plus d'un lot à la fois, ou déborder du périmètre du lot en cours
+- modifier un lot déjà livré sans que l'utilisateur me demande une correction explicite
 
 Je dois :
 - écrire/maintenir `docs/SPECS.md`, `docs/lots/LOT-0X.md`, `docs/ROADMAP.md`
-- faire la code review de ce que Replit Agent a implémenté, lot par lot, après chaque pull
-- proposer un message de commit à la fin de chaque tâche (l'utilisateur commit lui-même)
+- développer le code du lot en cours (`/client`, `/server`) en respectant strictement son
+  périmètre défini dans `docs/lots/LOT-0X.md`
+- avant de m'arrêter à la fin d'un lot : vérifier moi-même chaque critère d'acceptation
+  (OK / partiel / manquant), lancer le build, corriger ce qui manque, puis donner cette
+  checklist dans mon résumé
+- m'arrêter à la fin de chaque lot, expliquer comment tester, proposer un message de commit,
+  et attendre le feu vert de l'utilisateur avant de commencer le lot suivant
+- prendre en compte les retours d'une review indépendante que l'utilisateur peut transmettre
+  (faite dans une autre session), et les corriger avant de passer au lot suivant
 - garder le projet MINIMALISTE — c'est un projet de cours, pas un produit. Toujours préférer
-  la solution la plus simple qui satisfait les critères d'acceptation du lot.
+  la solution la plus simple qui satisfait les critères d'acceptation du lot. Pas
+  d'amélioration non demandée.
+
+## Économie de tokens (règle de travail permanente)
+
+- Aller droit au but : réponses courtes, pas de répétition de ce que l'utilisateur a dit,
+  pas d'explications non demandées.
+- Ne pas relire un fichier déjà lu dans la session sauf s'il a changé depuis.
+- Ne pas réafficher un fichier entier quand on en modifie une partie (utiliser des diffs/
+  extraits ciblés).
+- Résumés de fin de lot : quelques lignes maximum.
+
+## Base de données locale
+
+Le projet était prévu pour PostgreSQL intégré à Replit. En local sur Windows, avant de
+commencer le LOT-03 (premier lot qui a besoin d'une vraie base), proposer une solution
+simple à l'utilisateur (PostgreSQL local, Docker, service cloud gratuit, etc.) et attendre
+son choix avant de coder quoi que ce soit qui en dépend.
 
 ## Le projet en une phrase
 
@@ -26,20 +54,17 @@ stack imposée JS/React/Express/PostgreSQL/JWT, découpée en exactement 5 lots.
 
 Voir `docs/SPECS.md` pour les specs complètes et `docs/ROADMAP.md` pour l'état d'avancement.
 
-## Workflow en boucle
+## Workflow en boucle (depuis LOT-02)
 
-1. Je rédige/affine les specs d'un lot dans `docs/lots/LOT-0X.md`.
-2. L'utilisateur push sur GitHub.
-3. Replit Agent pull, lit `replit.md`, implémente le lot demandé (et seulement celui-là).
-4. Replit Agent push.
-5. L'utilisateur pull.
-6. Je fais la code review du lot : je vérifie les critères d'acceptation du fichier LOT-0X.md,
-   je signale les écarts, je propose des corrections (specs ou petites retouches de code si
-   l'utilisateur me le demande explicitement).
-7. Je mets à jour `docs/ROADMAP.md` (statut du lot).
-8. On passe au lot suivant.
-
-GitHub est la seule source de vérité entre Replit et moi. On ne se coordonne pas autrement.
+1. Specs du lot déjà écrites dans `docs/lots/LOT-0X.md` (sinon je les affine d'abord).
+2. Je code le lot dans `/client` et/ou `/server`, en respectant strictement son périmètre.
+3. Je vérifie moi-même chaque critère d'acceptation (OK/partiel/manquant), je lance le build,
+   je corrige ce qui manque.
+4. Je mets à jour `docs/ROADMAP.md` (statut du lot).
+5. Je m'arrête : je donne la checklist, comment tester, et un message de commit proposé.
+6. L'utilisateur teste, commit/push lui-même, et peut transmettre les retours d'une review
+   indépendante faite ailleurs.
+7. Je corrige si besoin, puis j'attends le feu vert avant le lot suivant.
 
 ## Conventions à faire respecter dans les specs et en review
 
