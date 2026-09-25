@@ -8,8 +8,12 @@ const roleHome = {
 };
 
 export default function ProtectedRoute({ allowedRoles, children }) {
-  const { user } = useAuth();
+  const { user, initializing } = useAuth();
   const location = useLocation();
+
+  if (initializing) {
+    return null;
+  }
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;

@@ -17,7 +17,8 @@ const roleHome = {
 };
 
 function HomeRedirect() {
-  const { user } = useAuth();
+  const { user, initializing } = useAuth();
+  if (initializing) return null;
   return <Navigate to={user ? roleHome[user.role] : "/login"} replace />;
 }
 

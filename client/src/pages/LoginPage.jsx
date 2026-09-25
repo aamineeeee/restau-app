@@ -20,10 +20,10 @@ export default function LoginPage() {
     if (user) navigate(roleHome[user.role] ?? "/", { replace: true });
   }, [user, navigate]);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     setError("");
-    const result = login(email, password);
+    const result = await login(email, password);
     if (!result.ok) {
       setError(result.error);
       return;

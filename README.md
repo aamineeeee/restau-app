@@ -9,20 +9,29 @@ cadre pédagogique. Trois rôles : client (commande), staff (traite les commande
 JavaScript (pas de TypeScript) · React + Vite (frontend) · Node.js + Express (backend) ·
 PostgreSQL · authentification par JWT.
 
-## Lancer le projet
+## Lancer le projet en local
 
-Prérequis : Node.js, une base PostgreSQL accessible via `DATABASE_URL`.
+Prérequis : Node.js, Docker.
 
-Variables d'environnement à définir (Secrets Replit ou `.env` local non commité) :
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `PORT` (optionnel, défaut `3001`)
-
-```bash
-npm install          # à la racine, installe aussi client/ et server/ si configuré en workspaces
-npm run seed --prefix server   # crée le schéma + les comptes de test (disponible à partir du LOT-03)
-npm run dev           # lance backend (port 3001) et frontend (port 5173) en parallèle
-```
+1. Copier `server/.env.example` vers `server/.env` (non commité).
+2. Démarrer une base PostgreSQL locale via Docker (une seule fois — le conteneur
+   persiste ensuite, le redémarrer avec `docker start latable-postgres`) :
+   ```bash
+   docker run --name latable-postgres \
+     -e POSTGRES_USER=latable -e POSTGRES_PASSWORD=latable -e POSTGRES_DB=latable \
+     -p 5433:5432 -d postgres:16-alpine
+   ```
+   (Le port hôte `5433` évite un conflit si un autre projet utilise déjà le 5432.
+   `server/.env.example` est déjà configuré pour ce port.)
+3. Installer les dépendances et initialiser la base :
+   ```bash
+   npm install
+   npm run seed --prefix server   # crée le schéma + les comptes de test
+   ```
+4. Lancer l'application :
+   ```bash
+   npm run dev   # backend sur :3001, frontend sur :5000
+   ```
 
 ## Comptes de test
 
