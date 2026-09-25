@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+  <rect width="40" height="40" rx="20" fill="#29553e"/>
+  <circle cx="20" cy="20" r="18.5" fill="none" stroke="#e8eee7"/>
+  <text x="20" y="25" fill="#faf8f2" font-family="Georgia,serif" font-size="12" font-weight="700" text-anchor="middle">LT</text>
+</svg>
