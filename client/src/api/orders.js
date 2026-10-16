@@ -8,6 +8,10 @@ export function fetchMyOrders(token) {
   return apiRequest("/orders/mine", { token });
 }
 
+export function cancelOrder(token, orderId) {
+  return apiRequest(`/orders/${orderId}/cancel`, { method: "PATCH", token });
+}
+
 export function fetchAllOrders(token) {
   return apiRequest("/orders", { token });
 }
