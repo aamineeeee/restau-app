@@ -209,6 +209,10 @@ button { cursor: pointer; }
 .button:hover { transform: translateY(-1px); border-color: var(--green-dark); background: var(--green-dark); }
 .button:focus-visible, .text-button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #a9c3a8; outline-offset: 3px; }
 .button-small { min-height: 32px; flex: 1; padding: 0 9px; font-size: 10px; }
+.button-outline, .button-outline:hover { background: #fff; color: var(--green); border-color: var(--line); }
+.button-outline:hover { border-color: var(--green); }
+.order-filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.order-filters .button-small { flex: none; padding: 0 14px; }
 .compact-intro { padding: 68px 0 34px; }
 .cart-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(250px, .8fr); align-items: start; gap: 52px; }
 .cart-list-heading { display: flex; justify-content: space-between; padding: 0 0 13px; border-bottom: 1px solid var(--line); color: #90978e; font-size: 10px; }
