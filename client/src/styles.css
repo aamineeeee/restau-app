@@ -124,6 +124,10 @@ button { cursor: pointer; }
 .eyebrow { margin: 0; color: #8a9184; font-size: 9px; font-weight: 700; letter-spacing: 1.8px; }
 .menu-intro { padding-bottom: 56px; }
 .menu-category { margin-bottom: 49px; }
+.menu-filters { display: flex; gap: 12px; margin-bottom: 36px; }
+.menu-filters input, .menu-filters select { height: 40px; padding: 0 11px; border: 1px solid var(--line); border-radius: 3px; background: #fff; color: var(--ink); font-size: 12px; }
+.menu-filters input { flex: 1; min-width: 0; }
+@media (max-width: 560px) { .menu-filters { flex-direction: column; } }
 .section-heading { display: flex; align-items: center; gap: 24px; margin-bottom: 22px; }
 .section-heading > div { display: flex; align-items: center; gap: 12px; }
 .section-index { color: #a8aea5; font-size: 9px; letter-spacing: 1px; }
