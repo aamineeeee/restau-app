@@ -26,7 +26,23 @@ export default function MenuPage() {
     };
   }, [token]);
 
+  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
   const categories = useMemo(() => [...new Set(menu.map((item) => item.category))], [menu]);
+
+  const visibleItems = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return menu.filter(
+      (item) =>
+        (!selectedCategory || item.category === selectedCategory) &&
+        item.name.toLowerCase().includes(query),
+    );
+  }, [menu, search, selectedCategory]);
+
+  const visibleCategories = categories.filter((category) =>
+    visibleItems.some((item) => item.category === category),
+  );
 
   if (status === "loading") {
     return (
@@ -51,7 +67,29 @@ export default function MenuPage() {
         <h1>Le menu</h1>
         <p>Des produits choisis avec soin, des assiettes faites maison.</p>
       </section>
-      {categories.map((category, index) => (
+      <div className="menu-filters">
+        <input
+          type="search"
+          placeholder="Rechercher un plat…"
+          aria-label="Rechercher un plat"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <select
+          aria-label="Filtrer par catégorie"
+          value={selectedCategory}
+          onChange={(event) => setSelectedCategory(event.target.value)}
+        >
+          <option value="">Toutes les catégories</option>
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+      </div>
+      {visibleCategories.length === 0 && <p className="page-status">Aucun plat trouvé.</p>}
+      {visibleCategories.map((category, index) => (
         <section className="menu-category" key={category}>
           <div className="section-heading">
             <div>
@@ -61,7 +99,7 @@ export default function MenuPage() {
             <span className="section-rule" aria-hidden="true" />
           </div>
           <div className="menu-grid">
-            {menu
+            {visibleItems
               .filter((item) => item.category === category)
               .map((item) => (
                 <MenuItemCard key={item.id} item={item} />
