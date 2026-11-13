@@ -8,6 +8,13 @@ import { formatPrice } from "../utils/format.js";
 const nextStatusOf = { recue: "en_preparation", en_preparation: "prete" };
 const actionLabel = { recue: "Démarrer la préparation", en_preparation: "Marquer prête" };
 
+const filters = [
+  { value: "all", label: "Toutes" },
+  { value: "recue", label: "Reçue" },
+  { value: "en_preparation", label: "En préparation" },
+  { value: "prete", label: "Prête" },
+];
+
 function formatDate(value) {
   return new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "long",
@@ -20,6 +27,11 @@ export default function StaffDashboardPage() {
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState("loading");
   const [updatingId, setUpdatingId] = useState(null);
+  const [filter, setFilter] = useState("all");
+
+  const countOf = (value) =>
+    value === "all" ? orders.length : orders.filter((order) => order.status === value).length;
+  const visibleOrders = filter === "all" ? orders : orders.filter((order) => order.status === filter);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,14 +96,27 @@ export default function StaffDashboardPage() {
           <h1>Commandes en cours</h1>
         </section>
 
-        {orders.length === 0 ? (
+        <div className="order-filters" role="group" aria-label="Filtrer par statut">
+          {filters.map(({ value, label }) => (
+            <button
+              key={value}
+              className={`button button-small${filter === value ? "" : " button-outline"}`}
+              aria-pressed={filter === value}
+              onClick={() => setFilter(value)}
+            >
+              {label} ({countOf(value)})
+            </button>
+          ))}
+        </div>
+
+        {visibleOrders.length === 0 ? (
           <section className="empty-state">
             <span className="empty-mark" aria-hidden="true">01</span>
             <h2>Aucune commande pour le moment.</h2>
           </section>
         ) : (
           <section className="orders-list" aria-label="Commandes des clients">
-            {orders.map((order) => (
+            {visibleOrders.map((order) => (
               <article className="order-card" key={order.id}>
                 <div className="order-card-top">
                   <div>
