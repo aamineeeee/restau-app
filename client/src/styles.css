@@ -255,6 +255,7 @@ button { cursor: pointer; }
 .status-recue { background: #f5eddd; color: #96733a; }
 .status-en_preparation { background: #e9eef2; color: #496c84; }
 .status-prete { background: #e6eee6; color: #47734e; }
+.status-annulee { background: #f1e4e2; color: #9a4b44; }
 .order-items { padding: 13px 0 11px; }
 .order-item { display: flex; justify-content: space-between; gap: 15px; padding: 5px 0; color: #677168; font-size: 11px; }
 .order-item > span:last-child { color: var(--ink); font-weight: 600; white-space: nowrap; }

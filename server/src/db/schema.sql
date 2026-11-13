@@ -21,11 +21,16 @@ CREATE TABLE IF NOT EXISTS menu_items (
 CREATE TABLE IF NOT EXISTS orders (
   id SERIAL PRIMARY KEY,
   user_id INTEGER NOT NULL REFERENCES users(id),
-  status TEXT NOT NULL DEFAULT 'recue' CHECK (status IN ('recue', 'en_preparation', 'prete')),
+  status TEXT NOT NULL DEFAULT 'recue' CHECK (status IN ('recue', 'en_preparation', 'prete', 'annulee')),
   total NUMERIC(10, 2) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Migration : ajoute 'annulee' sur les bases existantes (CREATE TABLE IF NOT EXISTS ne modifie pas la contrainte).
+ALTER TABLE orders DROP CONSTRAINT IF EXISTS orders_status_check;
+ALTER TABLE orders ADD CONSTRAINT orders_status_check
+  CHECK (status IN ('recue', 'en_preparation', 'prete', 'annulee'));
 
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  cancelOrder,
   createOrder,
   getAllOrders,
   listMyOrders,
@@ -12,6 +13,7 @@ const router = Router();
 
 router.post("/", requireAuth, requireRole("client"), createOrder);
 router.get("/mine", requireAuth, requireRole("client"), listMyOrders);
+router.patch("/:id/cancel", requireAuth, requireRole("client"), cancelOrder);
 router.get("/", requireAuth, requireRole("staff"), getAllOrders);
 router.patch("/:id/status", requireAuth, requireRole("staff"), updateOrderStatus);
 

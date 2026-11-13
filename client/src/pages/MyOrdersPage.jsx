@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchMyOrders } from "../api/orders.js";
+import { cancelOrder, fetchMyOrders } from "../api/orders.js";
 import OrderStatusBadge from "../components/OrderStatusBadge.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import { formatPrice } from "../utils/format.js";
@@ -17,6 +17,7 @@ export default function MyOrdersPage() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [status, setStatus] = useState("loading");
+  const [cancellingId, setCancellingId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,6 +46,18 @@ export default function MyOrdersPage() {
       clearInterval(intervalId);
     };
   }, [token]);
+
+  async function handleCancel(orderId) {
+    setCancellingId(orderId);
+    try {
+      const updated = await cancelOrder(token, orderId);
+      setOrders((current) => current.map((order) => (order.id === updated.id ? updated : order)));
+    } catch {
+      // La commande garde son statut si l'annulation échoue (ex. déjà prise en charge).
+    } finally {
+      setCancellingId(null);
+    }
+  }
 
   if (status === "loading") {
     return (
@@ -105,6 +118,15 @@ export default function MyOrdersPage() {
                 <span>
                   Total <strong>{formatPrice(order.total)}</strong>
                 </span>
+                {order.status === "recue" && (
+                  <button
+                    className="button button-small"
+                    onClick={() => handleCancel(order.id)}
+                    disabled={cancellingId === order.id}
+                  >
+                    {cancellingId === order.id ? "…" : "Annuler"}
+                  </button>
+                )}
               </div>
               <span className="order-list-number" aria-hidden="true">
                 {String(index + 1).padStart(2, "0")}

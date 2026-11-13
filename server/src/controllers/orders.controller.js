@@ -117,6 +117,34 @@ export async function getAllOrders(_request, response) {
   response.json(await attachItems(orders));
 }
 
+export async function cancelOrder(request, response) {
+  const orderId = Number(request.params.id);
+  if (!Number.isInteger(orderId)) {
+    return response.status(404).json({ error: "Commande introuvable." });
+  }
+
+  const { rows: updatedRows } = await pool.query(
+    `UPDATE orders SET status = 'annulee', updated_at = now()
+     WHERE id = $1 AND user_id = $2 AND status = 'recue'
+     RETURNING *`,
+    [orderId, request.user.id],
+  );
+
+  if (updatedRows.length === 0) {
+    const { rows } = await pool.query("SELECT 1 FROM orders WHERE id = $1 AND user_id = $2", [
+      orderId,
+      request.user.id,
+    ]);
+    if (rows.length === 0) {
+      return response.status(404).json({ error: "Commande introuvable." });
+    }
+    return response.status(400).json({ error: "Commande non annulable." });
+  }
+
+  const [publicOrder] = await attachItems(updatedRows);
+  response.json(publicOrder);
+}
+
 export async function updateOrderStatus(request, response) {
   const orderId = Number(request.params.id);
   const { status } = request.body ?? {};
@@ -131,7 +159,8 @@ export async function updateOrderStatus(request, response) {
     return response.status(404).json({ error: "Commande introuvable." });
   }
 
-  const nextStatus = STATUS_ORDER[STATUS_ORDER.indexOf(order.status) + 1];
+  const currentIndex = STATUS_ORDER.indexOf(order.status);
+  const nextStatus = currentIndex === -1 ? undefined : STATUS_ORDER[currentIndex + 1];
   if (status !== nextStatus) {
     return response.status(400).json({ error: "Transition de statut invalide." });
   }

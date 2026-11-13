@@ -2,6 +2,7 @@ const statusLabels = {
   recue: "Reçue",
   en_preparation: "En préparation",
   prete: "Prête",
+  annulee: "Annulée",
 };
 
 export default function OrderStatusBadge({ status }) {
